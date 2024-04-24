@@ -54,7 +54,7 @@ func (lista *listaEnlazada[T]) InsertarUltimo(elemento T) {
 }
 
 func (lista *listaEnlazada[T]) BorrarPrimero() T {
-	//completar en adelante
+	//Falta completar
 	panic(_PANIC_LISTA_VACIA)
 }
 
@@ -73,13 +73,15 @@ func (lista *listaEnlazada[T]) VerUltimo() T {
 }
 
 func (lista *listaEnlazada[T]) Largo() int {
-	panic("unimplemented")
+	return lista.largo
 }
 
 func (lista *listaEnlazada[T]) Iterar(visitar func(T) bool) {
+	//Falta completar
 	panic("unimplemented")
 }
 
 func (lista *listaEnlazada[T]) Iterador() IteradorLista[T] {
+	//Falta completar
 	panic("unimplemented")
 }
