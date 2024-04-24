@@ -54,10 +54,8 @@ func (lista *listaEnlazada[T]) InsertarUltimo(elemento T) {
 }
 
 func (lista *listaEnlazada[T]) BorrarPrimero() T {
-	if lista.EstaVacia() {
-		panic(_PANIC_LISTA_VACIA)
-	}
-	lista.largo--
+	//completar en adelante
+	panic(_PANIC_LISTA_VACIA)
 }
 
 func (lista *listaEnlazada[T]) VerPrimero() T {
