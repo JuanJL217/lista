@@ -1,6 +1,9 @@
 package lista
 
-const _PANIC_LISTA_VACIA string = "La lista esta vacia"
+const (
+	_PANIC_LISTA_VACIA   string = "La lista esta vacia"
+	_PANIC_FIN_ITERACION string = "El iterador termino de iterar"
+)
 
 type nodoLista[T any] struct {
 	dato      T
@@ -14,17 +17,17 @@ type listaEnlazada[T any] struct {
 }
 
 type iterListaEnlazada[T any] struct {
-	actual   *nodoLista[T]
-	anterior *nodoLista[T]
-	lista    *nodoLista[T]
+	listaIterar *listaEnlazada[T]
+	actual      *nodoLista[T]
+	anterior    *nodoLista[T]
 }
 
 func CrearListaEnlazada[T any]() Lista[T] {
-	return &listaEnlazada[T]{primero: nil, ultimo: nil, largo: 0}
+	return &listaEnlazada[T]{}
 }
 
 func nuevoNodo[T any](elemento T) *nodoLista[T] {
-	return &nodoLista[T]{dato: elemento, siguiente: nil}
+	return &nodoLista[T]{dato: elemento}
 }
 
 func (lista *listaEnlazada[T]) EstaVacia() bool {
@@ -94,12 +97,25 @@ func (lista *listaEnlazada[T]) Iterar(visitar func(T) bool) {
 }
 
 func (lista *listaEnlazada[T]) Iterador() IteradorLista[T] {
-	iterExterno := new(iterListaEnlazada[T])
-	if lista.EstaVacia() {
-		iterExterno.actual = lista.primero
-	} else {
-		iterExterno.anterior = lista.primero
-		iterExterno.actual = lista.primero.siguiente
-	}
+	return &iterListaEnlazada[T]{listaIterar: lista}
+}
+
+func (lista *listaEnlazada[T]) VerActual() T {
+
+}
+
+func (lista *listaEnlazada[T]) HaySiguiente() bool {
+
+}
+
+func (lista *listaEnlazada[T]) Siguiente() {
+
+}
+
+func (lista *listaEnlazada[T]) Insertar(elemento T) {
+
+}
+
+func (lista *listaEnlazada[T]) Borrar() T {
 
 }
