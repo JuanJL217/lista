@@ -54,8 +54,13 @@ func (lista *listaEnlazada[T]) InsertarUltimo(elemento T) {
 }
 
 func (lista *listaEnlazada[T]) BorrarPrimero() T {
-	//Falta completar
-	panic(_PANIC_LISTA_VACIA)
+	if lista.EstaVacia() {
+		panic(_PANIC_LISTA_VACIA)
+	}
+	dato := lista.primero.dato
+	lista.primero = lista.primero.siguiente
+	lista.largo--
+	return dato
 }
 
 func (lista *listaEnlazada[T]) VerPrimero() T {
@@ -77,11 +82,24 @@ func (lista *listaEnlazada[T]) Largo() int {
 }
 
 func (lista *listaEnlazada[T]) Iterar(visitar func(T) bool) {
-	//Falta completar
-	panic("unimplemented")
+	nodoAux := lista.primero
+	for nodoAux != nil {
+		elemento := nodoAux.dato
+		nodoAux = nodoAux.siguiente
+		if !visitar(elemento) {
+			break
+		}
+	}
+
 }
 
 func (lista *listaEnlazada[T]) Iterador() IteradorLista[T] {
-	//Falta completar
-	panic("unimplemented")
+	iterExterno := new(iterListaEnlazada[T])
+	if lista.EstaVacia() {
+		iterExterno.actual = lista.primero
+	} else {
+		iterExterno.anterior = lista.primero
+		iterExterno.actual = lista.primero.siguiente
+	}
+
 }

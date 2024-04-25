@@ -26,7 +26,9 @@ type Lista[T any] interface {
 	//Largo: Obtiene el largo de la lista
 	Largo() int
 
+	//Iterar: Iterador interno , Itera hasta que la funcion visitar reciba un "false" o la lista quede vacia.
 	Iterar(visitar func(T) bool)
+
 	Iterador() IteradorLista[T]
 }
 
