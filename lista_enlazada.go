@@ -17,9 +17,9 @@ type listaEnlazada[T any] struct {
 }
 
 type iterListaEnlazada[T any] struct {
-	listaIterar *listaEnlazada[T]
-	actual      *nodoLista[T]
-	anterior    *nodoLista[T]
+	lista    *listaEnlazada[T]
+	actual   *nodoLista[T]
+	anterior *nodoLista[T]
 }
 
 func CrearListaEnlazada[T any]() Lista[T] {
@@ -86,36 +86,73 @@ func (lista *listaEnlazada[T]) Largo() int {
 
 func (lista *listaEnlazada[T]) Iterar(visitar func(T) bool) {
 	nodoAux := lista.primero
-	for nodoAux != nil {
-		elemento := nodoAux.dato
+	sigamos := true
+	for sigamos || nodoAux != nil {
 		nodoAux = nodoAux.siguiente
-		if !visitar(elemento) {
-			break
+		if !visitar(nodoAux.dato) {
+			sigamos = false
 		}
 	}
-
 }
 
 func (lista *listaEnlazada[T]) Iterador() IteradorLista[T] {
-	return &iterListaEnlazada[T]{listaIterar: lista}
+	return &iterListaEnlazada[T]{lista: lista, actual: lista.primero}
 }
 
-func (lista *listaEnlazada[T]) VerActual() T {
-
+func (iterador *iterListaEnlazada[T]) HaySiguiente() bool {
+	return iterador.actual != nil
 }
 
-func (lista *listaEnlazada[T]) HaySiguiente() bool {
-
+func (iterador *iterListaEnlazada[T]) VerActual() T {
+	if !iterador.HaySiguiente() {
+		panic(_PANIC_FIN_ITERACION)
+	}
+	return iterador.actual.dato
 }
 
-func (lista *listaEnlazada[T]) Siguiente() {
-
+func (iterador *iterListaEnlazada[T]) Siguiente() {
+	if !iterador.HaySiguiente() {
+		panic(_PANIC_FIN_ITERACION)
+	}
+	iterador.anterior = iterador.actual
+	iterador.actual = iterador.actual.siguiente
 }
 
-func (lista *listaEnlazada[T]) Insertar(elemento T) {
-
+func (iterador *iterListaEnlazada[T]) Insertar(elemento T) {
+	nuevoEnlace := nuevoNodo(elemento)
+	if iterador.lista.EstaVacia() {
+		iterador.lista.InsertarPrimero(elemento)
+	} else if iterador.actual == iterador.lista.primero {
+		nuevoEnlace.siguiente = iterador.lista.primero
+		iterador.lista.primero = nuevoEnlace
+	} else {
+		nuevoEnlace.siguiente = iterador.actual
+		iterador.anterior.siguiente = nuevoEnlace
+		if nuevoEnlace.siguiente == nil {
+			iterador.lista.ultimo = nuevoEnlace
+		}
+	}
 }
 
-func (lista *listaEnlazada[T]) Borrar() T {
-
+func (iterador *iterListaEnlazada[T]) Borrar() T {
+	if !iterador.HaySiguiente() {
+		panic(_PANIC_FIN_ITERACION)
+	}
+	elementoBorrar := iterador.actual.dato
+	if iterador.actual == iterador.lista.primero {
+		iterador.lista.primero = iterador.lista.primero.siguiente
+		iterador.actual = iterador.lista.primero
+		if iterador.lista.primero == nil {
+			iterador.lista.ultimo = nil
+		}
+	} else if iterador.actual == iterador.lista.ultimo {
+		iterador.lista.ultimo = iterador.anterior
+		iterador.actual.siguiente = nil
+		iterador.actual = nil
+	} else {
+		iterador.actual = iterador.actual.siguiente
+		iterador.anterior.siguiente = iterador.actual
+	}
+	iterador.lista.largo--
+	return elementoBorrar
 }

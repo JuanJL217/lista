@@ -29,9 +29,7 @@ type Lista[T any] interface {
 	//Iterar: Iterador interno, itera hasta que la funcion visitar reciba un "false" o la lista quede vacia.
 	Iterar(visitar func(T) bool)
 
-	//Iteador: Iterador externo, interará la lista manualmente hasta cualquier posicion de la lista.
-	//Cuando no haya elemento para iterar (terminado de iterar la lista completa), entrara en panico
-	//con el mensaje "El iterador temrino de iterar"
+	//Iteador: Iterador externo, devuelve un IteradorLista con la cual vamos a poder iterar esta Lista
 	Iterador() IteradorLista[T]
 }
 
