@@ -121,7 +121,8 @@ func (iterador *iterListaEnlazada[T]) Siguiente() {
 func (iterador *iterListaEnlazada[T]) Insertar(elemento T) {
 	nuevoEnlace := nuevoNodo(elemento)
 	if iterador.lista.EstaVacia() {
-		iterador.lista.InsertarPrimero(elemento)
+		iterador.lista.primero = nuevoEnlace
+		iterador.lista.ultimo = nuevoEnlace
 	} else if iterador.actual == iterador.lista.primero {
 		nuevoEnlace.siguiente = iterador.lista.primero
 		iterador.lista.primero = nuevoEnlace
