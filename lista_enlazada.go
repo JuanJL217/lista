@@ -84,13 +84,14 @@ func (lista *listaEnlazada[T]) Largo() int {
 	return lista.largo
 }
 
-func (lista *listaEnlazada[T]) Iterar(visitar func(T) bool) {
+func (lista listaEnlazada[T]) Iterar(visitar func(T) bool) {
 	nodoAux := lista.primero
-	sigamos := true
-	for sigamos || nodoAux != nil {
+	estado := true
+	for nodoAux != nil && estado {
+		elemento := nodoAux.dato
 		nodoAux = nodoAux.siguiente
-		if !visitar(nodoAux.dato) {
-			sigamos = false
+		if !visitar(elemento) {
+			estado = false
 		}
 	}
 }
