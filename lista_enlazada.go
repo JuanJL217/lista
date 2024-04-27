@@ -124,15 +124,20 @@ func (iterador *iterListaEnlazada[T]) Insertar(elemento T) {
 	if iterador.lista.EstaVacia() {
 		iterador.lista.primero = nuevoEnlace
 		iterador.lista.ultimo = nuevoEnlace
+		iterador.actual = nuevoEnlace
 	} else if iterador.actual == iterador.lista.primero {
 		nuevoEnlace.siguiente = iterador.lista.primero
 		iterador.lista.primero = nuevoEnlace
+		iterador.actual = nuevoEnlace
+	} else if iterador.actual == iterador.lista.ultimo {
+		nuevoEnlace.siguiente = nil
+		iterador.lista.ultimo.siguiente = nuevoEnlace
+		iterador.actual = iterador.lista.ultimo
+		iterador.lista.ultimo = nuevoEnlace
 	} else {
 		nuevoEnlace.siguiente = iterador.actual
 		iterador.anterior.siguiente = nuevoEnlace
-		if nuevoEnlace.siguiente == nil {
-			iterador.lista.ultimo = nuevoEnlace
-		}
+		iterador.actual = nuevoEnlace
 	}
 }
 
