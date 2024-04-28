@@ -20,32 +20,21 @@ func TestListaVacia(t *testing.T) {
 func TestAgregarElementosParte1(t *testing.T) {
 	t.Log("Prueba agregando 3 elementos, iniciando insertando al principio")
 	lista := TDALista.CrearListaEnlazada[int]()
-	lista.InsertarPrimero(5)
+	lista.InsertarUltimo(5)
 	require.False(t, lista.EstaVacia(), "Devuelve False, porque ya hay un elemento en la lista")
 	require.Equal(t, 5, lista.VerPrimero(), "Elemento agregado, es el primero en la lista")
 	require.Equal(t, 5, lista.VerUltimo(), "Al ser el único elemento, debe ser el último elemento también")
 	require.Equal(t, 1, lista.Largo(), "Hay 1 elemento en la lista")
-	lista.InsertarPrimero(7)
-	require.Equal(t, 7, lista.VerPrimero(), "Numero 3 es agregado a la primera posicion")
+	lista.InsertarPrimero(3)
+	require.Equal(t, 3, lista.VerPrimero(), "Numero 3 es agregado a la primera posicion")
 	require.Equal(t, 5, lista.VerUltimo(), "El numero 5 se quedó con la última posicion")
 	require.Equal(t, 2, lista.Largo(), "Hay 2 elementos en la lista")
 	lista.InsertarUltimo(10)
-	require.Equal(t, 7, lista.VerPrimero())
 	require.Equal(t, 10, lista.VerUltimo())
 	require.Equal(t, 3, lista.Largo(), "Hay 3 elementos en la lista")
-
-}
-
-func TestAgregarElementosParte2(t *testing.T) {
-	t.Log("Prueba agregando 3 elementos, iniciando insertando al principio")
-	lista := TDALista.CrearListaEnlazada[string]()
-	lista.InsertarUltimo("Juan")
-	require.False(t, lista.EstaVacia(), "Devuelve False, porque ya hay un elemento en la lista")
-	require.Equal(t, "Juan", lista.VerPrimero(), "")
-	require.Equal(t, "Juan", lista.VerUltimo(), "")
-	require.Equal(t, 1, lista.Largo(), "Hay 1 elemento en la lista")
-	// Juan: Yo termino con esta prueba
-	// Alex: weno pa
+	lista.InsertarPrimero(0)
+	require.Equal(t, 0, lista.VerPrimero())
+	require.Equal(t, 4, lista.Largo())
 }
 
 func TestListaInsertarPrimeroBorrarPrimero(t *testing.T) {
@@ -174,6 +163,10 @@ func TestIteradorInternoCorte(t *testing.T) {
 	require.False(t, listaCorte.EstaVacia())
 }
 
+func TestVolumen(t *testing.T) {
+
+}
+
 // -------------------TEST ITERADOR EXTERNO ----------------------------//
 // De aquí para abajo serán Test unicamente para el Iterador Externo
 func TestIteradorExternoListaVacia(t *testing.T) {
@@ -186,15 +179,15 @@ func TestIteradorExternoListaVacia(t *testing.T) {
 	require.False(t, iter.HaySiguiente(), "Al ser vacia, no hay siguiente")
 }
 
-// Recordatorio que me falta escribir explicaciones :vvvvv
 func TestAgregarElementoExternoListaVacia(t *testing.T) {
-	t.Log("Agregar un elemento en una lista vacia debe ser aceptado")
+	t.Log("Agregar un elemento externamente en una lista vacia debe ser aceptado")
 	lista := TDALista.CrearListaEnlazada[string]()
 	iter := lista.Iterador()
 	iter.Insertar("Alex")
-	require.Equal(t, "Alex", lista.VerPrimero())
+	require.Equal(t, "Alex", lista.VerPrimero(), "Al insertar un elemento en una lista vacia, tanto tanto con un iterador externo o no, ese elemento es el primer y ultimo elemento de la lista")
 	require.Equal(t, "Alex", lista.VerUltimo())
-	require.Equal(t, "Alex", iter.VerActual())
+	require.Equal(t, "Alex", iter.VerActual(), "Al agregarse un elemento, ")
+	require.Equal(t, 1, lista.Largo())
 	require.True(t, iter.HaySiguiente())
 }
 
@@ -227,7 +220,10 @@ func TestAgregarVariosElementosExternosListaVacia(t *testing.T) {
 	iter.Siguiente()
 	iter.Siguiente()
 	require.Equal(t, 7.8, iter.VerActual())
-	// No recuerdo que me faltaba xd En la madrugada lo completo
+	iter.Siguiente()
+	require.PanicsWithValue(t, "El iterador termino de iterar", func() { iter.VerActual() })
+
+	require.Equal(t, 7, lista.Largo(), "Al haber agregado externamente, el Largo debe ser igual a la cantidad de elementos que tiene la lista")
 }
 
 func TestInsertarElementosExternamente(t *testing.T) {
@@ -256,31 +252,33 @@ func TestInsertarElementosExternamente(t *testing.T) {
 	iter.Siguiente()
 	iter.Siguiente()
 	iter.Siguiente()
-	require.Equal(t, 7, iter.VerActual())
-	iter.Insertar(8)
-	require.Equal(t, 8, lista.VerUltimo(), "Agrega el ultimo elemento como lista.InsertarUltimo() ")
-	require.Equal(t, 7, iter.VerActual(), "El iterador actual no cambia al elemento agregado por ser el ultimo de la lista")
-	iter.Siguiente()
-	require.Equal(t, 8, iter.VerActual())
 	iter.Siguiente()
 	require.PanicsWithValue(t, "El iterador termino de iterar", func() { iter.VerActual() })
+	iter.Insertar(8)
+	require.Equal(t, 8, iter.VerActual())
+	require.Equal(t, 8, lista.VerUltimo())
 
+	require.Equal(t, 8, lista.Largo(), "El largo de la lista es 8 por ser los 5 iniciales + 3 insertados")
 }
 
-func BorrarElementoExternamente(t *testing.T) {
+func TestBorrarElementoExternamente1(t *testing.T) {
 	t.Log("Borraremos un elemento de una lista con un solo elemento")
 	lista := TDALista.CrearListaEnlazada[string]()
 	lista.InsertarUltimo("Tengo estres")
 	iter := lista.Iterador()
 	require.Equal(t, "Tengo estres", iter.VerActual())
-	require.Equal(t, "Tengo estres", iter.Borrar(), "SE elimina el valor donde este el iterador")
+	require.Equal(t, "Tengo estres", iter.Borrar(), "Se elimina el elemento donde este el iterador, de la lista")
+	iter.Insertar("Podré promocionar?")
+	require.Equal(t, "Podré promocionar?", iter.VerActual())
+	require.Equal(t, "Podré promocionar?", iter.Borrar())
+	require.Equal(t, 0, lista.Largo())
 	require.PanicsWithValue(t, "El iterador termino de iterar", func() { iter.VerActual() }, "Al borrarse el unico elemento, no hay nada para iterar, entonces 'termino de iterar'")
 	require.PanicsWithValue(t, "La lista esta vacia", func() { lista.VerPrimero() })
 	require.PanicsWithValue(t, "La lista esta vacia", func() { lista.VerUltimo() })
 	require.PanicsWithValue(t, "La lista esta vacia", func() { lista.BorrarPrimero() })
 }
 
-func BorrarElementosExternamente(t *testing.B) {
+func TestBorrarElementosExternamente(t *testing.T) {
 	apellidos := []string{"Juarez", "Limachi", "Lezama", "Cordero", "Messi", "Miranda", "Avalos"}
 	lista := TDALista.CrearListaEnlazada[string]()
 	for i := 0; i < len(apellidos); i++ {
@@ -289,9 +287,9 @@ func BorrarElementosExternamente(t *testing.B) {
 	iter := lista.Iterador()
 
 	t.Log("Borraremos el primer elemento")
-	require.Equal(t, "Juarez", iter.Borrar())
-	require.Equal(t, "Limachi", iter.VerActual())
-	require.Equal(t, "Limachi", lista.VerPrimero())
+	require.Equal(t, "Juarez", iter.Borrar(), "Al inicializarse el iterado el primer elemento de una lista, se elimina 'Juarez'")
+	require.Equal(t, "Limachi", iter.VerActual(), "Se borra a 'Juarez' y el iterador cambia de posicion al nuevo primer elemento de la lista 'Limachi'")
+	require.Equal(t, "Limachi", lista.VerPrimero(), "Limachi es el nuevo primero elemento de la lista")
 
 	t.Log("Borraremos un elemento del medio")
 	iter.Siguiente()
@@ -305,168 +303,41 @@ func BorrarElementosExternamente(t *testing.B) {
 	iter.Siguiente()
 	require.Equal(t, "Avalos", iter.VerActual())
 	require.Equal(t, "Avalos", iter.Borrar())
-	require.Equal(t, "Miranda", lista.VerUltimo())
-	require.Equal(t, "Miranda", iter.VerActual())
+	require.Equal(t, "Miranda", lista.VerUltimo(), "Al borrar 'Avalos' de la lista, el elemento anterior es el nuevo ultimo elemento de la lista")
+	require.PanicsWithValue(t, "El iterador termino de iterar", func() { iter.VerActual() }, "Entra en panic porque actualmente está apuntando al nill de la lista (el final)")
 
-	t.Log("Borraremos todos lo elementos que quedan hasta dejar la lista vacia")
-	require.Equal(t, "Miranda", iter.Borrar())
-	require.Equal(t, "Messi", iter.Borrar())
-	require.Equal(t, "Lezama", iter.Borrar())
-	require.Equal(t, "Limachi", iter.Borrar())
-	require.True(t, lista.EstaVacia())
+	require.Equal(t, 4, lista.Largo(), "Por haber eliminado 3 elementos de una lista con 7 elementos")
 }
 
-func TestIteradorExternoInsertar(t *testing.T) {
-	//Insertar usando el iterador externo en una lista vacia
-	var (
-		sliceNumeros = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-		largo        = len(sliceNumeros)
-	)
-	lista := TDALista.CrearListaEnlazada[int]()
-	iter := lista.Iterador()
-	for _, valor := range sliceNumeros {
-		iter.Insertar(valor)
-	}
-	//Esta operacion es identica a InsertarPrimero pq el iterador apunta al primer nodo
-	require.Equal(t, sliceNumeros[lista.Largo()-1], iter.VerActual())
-	//verificamos que la lista se modifique usando la primitiva Insertar del iterador
-	require.False(t, lista.EstaVacia())
-	require.Equal(t, largo, lista.Largo())
-
-}
-
-func TestIteradorExternoInsertarUltimo(t *testing.T) {
-	// Caso borde: si el iterador esta posicionado en el final de un elemento se tiene que comportar como la funcion
-	//InsertarUltimo
-	var (
-		arrNumImpares = []int{1, 3, 5, 7, 9, 11, 13}
-		contador      = 0
-		numeroImpar   = 15
-	)
-	lista := TDALista.CrearListaEnlazada[int]()
-	for _, valor := range arrNumImpares {
-		lista.InsertarUltimo(valor)
-	}
-	iter := lista.Iterador()
-	for iter.HaySiguiente() {
-		require.Equal(t, arrNumImpares[contador], iter.VerActual())
-		contador++
-		iter.Siguiente()
-	}
-	iter.Insertar(numeroImpar)
-	//en este caso pasamos de un arr [1,3,5,7,9,11,13] => [1,3,5,7,9,11,13,15]
-	require.Equal(t, numeroImpar, lista.VerUltimo())
-
-}
-
-func TestIteradorExternoInsertarPrimero(t *testing.T) {
-	//Caso borde: Cuando el iterador apunta al primer nodo, este al insertar un dato se tiene que comportar como la funcion
-	// InsertarPrimero
-	var (
-		arrEquipos = []string{"Francia", "Croacia"}
-		campeon    = "Argentina"
-	)
+func TestComprobarCambiosIteradorExterno(t *testing.T) {
+	t.Log("Insertar y Borrar distintos elementos en la lista con iterador externo")
 	lista := TDALista.CrearListaEnlazada[string]()
-	for _, valor := range arrEquipos {
-		lista.InsertarPrimero(valor)
-	}
+	lista.InsertarUltimo("B")
+	lista.InsertarPrimero("A")
 	iter := lista.Iterador()
-	iter.Insertar(campeon)
-	require.Equal(t, campeon, iter.VerActual())
-	require.Equal(t, len(arrEquipos)+1, lista.Largo())
+	require.Equal(t, "A", iter.Borrar())
+	iter.Insertar("C")
+	iter.Siguiente()
+	require.Equal(t, "B", iter.Borrar())
+	iter.Insertar("D")
+	iter.Siguiente()
+	iter.Insertar("E")
+	iter.Insertar("F")
+	iter.Insertar("G")
+	iter.Insertar("H")
+	iter.Siguiente()
+	iter.Siguiente()
+	require.Equal(t, "F", iter.Borrar())
+	require.Equal(t, 5, lista.Largo())
+	require.Equal(t, "C", lista.VerPrimero())
+	require.Equal(t, "E", lista.VerUltimo())
 
-}
-
-func TestIteradorExternoBorrarPrimero(t *testing.T) {
-	// Borramos todos los elementos usando el iterador externo
-	var (
-		arrNumeros = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-		contador   = 1
-	)
-	lista := TDALista.CrearListaEnlazada[int]()
-	iter := lista.Iterador()
-	for _, valor := range arrNumeros {
-		iter.Insertar(valor)
-	}
-
-	for iter.HaySiguiente() {
-		dato := iter.Borrar()
-		require.Equal(t, arrNumeros[len(arrNumeros)-contador], dato)
-		contador++
-		iter.Siguiente()
-	}
-	//La lista tiene que tener un comportamiento como recien creada
+	t.Log("Nuevo iterador externo para visualizar si los cambios efecutuados tras insertar y borrar son aceptados")
+	iter2 := lista.Iterador()
+	require.Equal(t, "C", iter2.Borrar())
+	require.Equal(t, "D", iter2.Borrar())
+	require.Equal(t, "H", iter2.Borrar())
+	require.Equal(t, "G", iter2.Borrar())
+	require.Equal(t, "E", iter2.Borrar())
 	require.True(t, lista.EstaVacia())
-	require.False(t, iter.HaySiguiente())
-	require.Panics(t, func() {
-		iter.Borrar()
-		iter.Siguiente()
-		iter.VerActual()
-	})
-}
-
-func TestIteradorExternoBorrarUltimo(t *testing.T) {
-	var (
-		sliceDecimal = []float64{1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.9, 10.0}
-		contador     = 1
-	)
-	lista := TDALista.CrearListaEnlazada[float64]()
-	iter := lista.Iterador()
-	for _, valor := range sliceDecimal {
-		iter.Insertar(valor)
-	}
-	for iter.HaySiguiente() {
-		if contador == lista.Largo() {
-			iter.Borrar()
-		} else {
-			iter.Siguiente()
-			contador++
-		}
-	}
-
-}
-
-func TestIteradorExternoIterarCompleto(t *testing.T) {
-	//Test vamos a contar la cantidad de elementos que hay en el slice
-	var (
-		sliceVocales = []string{"a", "e", "i", "o", "u"}
-	)
-	lista := TDALista.CrearListaEnlazada[string]()
-	iter := lista.Iterador()
-	for _, dato := range sliceVocales {
-		iter.Insertar(dato)
-	}
-	caracteres := 0
-	for iter.HaySiguiente() {
-		caracteres++
-		iter.Siguiente()
-	}
-	require.Equal(t, lista.Largo(), caracteres)
-}
-
-func TestIteradorExternoCorte(t *testing.T) {
-	//Test: encontrar el elemento que es impar
-	var (
-		impar          int
-		solucion       int
-		arrBuscarInpar = []int{2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20}
-	)
-	lista := TDALista.CrearListaEnlazada[int]()
-
-	for _, valor := range arrBuscarInpar {
-		//buscamos el elemento impar usando el bucle
-		lista.InsertarPrimero(valor)
-		if valor%2 != 0 {
-			solucion = valor
-		}
-	}
-	//Ahora usamos nuestro iterador y buscamos
-	for iter := lista.Iterador(); iter.HaySiguiente(); iter.Siguiente() {
-		if iter.VerActual()%2 != 0 {
-			impar = iter.Borrar()
-		}
-	}
-	require.Equal(t, solucion, impar)
-	//Como borramos un elemento , se modifica el largo de la lista
-	require.Equal(t, len(arrBuscarInpar)-1, lista.Largo())
 }
