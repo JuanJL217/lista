@@ -7,17 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	LISTA_VACIA = 0
-)
-
-var (
-	sliceNumeros   = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	sliceVocales   = []string{"a", "e", "i", "o", "u"}
-	sliceDecimal   = []float64{1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.9, 10.0}
-	arrBuscarInpar = []int{2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20}
-)
-
 func TestListaVacia(t *testing.T) {
 	t.Log("Pruebas con una lista crecien creada")
 	lista := TDALista.CrearListaEnlazada[string]()
@@ -61,6 +50,9 @@ func TestAgregarElementosParte2(t *testing.T) {
 
 func TestListaInsertarPrimeroBorrarPrimero(t *testing.T) {
 	//TEST BORRAR PRIMERO INSERTANDO PRIMERO
+	var (
+		sliceDecimal = []float64{1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.9, 10.0}
+	)
 	lista := TDALista.CrearListaEnlazada[float64]()
 	for _, valor := range sliceDecimal {
 		lista.InsertarPrimero(valor)
@@ -78,11 +70,15 @@ func TestListaInsertarPrimeroBorrarPrimero(t *testing.T) {
 		lista.VerPrimero()
 		lista.BorrarPrimero()
 	})
-	require.Equal(t, LISTA_VACIA, lista.Largo())
+	require.Equal(t, 0, lista.Largo())
 }
 
 func TestListaInsertarUltimoBorrarPrimero(t *testing.T) {
 	//Test insertando ultimo borrando primero
+	const LISTA_VACIA = 0
+	var (
+		sliceVocales = []string{"a", "e", "i", "o", "u"}
+	)
 	lista := TDALista.CrearListaEnlazada[string]()
 	for _, valor := range sliceVocales {
 		lista.InsertarUltimo(valor)
@@ -106,6 +102,7 @@ func TestListaInsertarUltimoBorrarPrimero(t *testing.T) {
 // --------------TEST ITERADOR INTERNO---------------------------//
 func TestIteradorInternoVacio(t *testing.T) {
 	//Test Iterador interno: Iterando una lista vacia
+	const LISTA_VACIA = 0
 	lista := TDALista.CrearListaEnlazada[int]()
 	lista.Iterar(func(i int) bool {
 		require.True(t, lista.EstaVacia())
@@ -122,17 +119,22 @@ func TestIteradorInternoVacio(t *testing.T) {
 
 func TestIteradorInternoCompleto(t *testing.T) {
 	//Test SUMA TODOS LOS ELEMENTOS
-	const TOTAL_SUMA = 55
+	var (
+		solucionTotal   int
+		sliceNumeros    = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+		sumaIterInterno int
+	)
 	lista := TDALista.CrearListaEnlazada[int]()
 	for _, valor := range sliceNumeros {
 		lista.InsertarPrimero(valor)
+		solucionTotal += valor
 	}
-	contador := 0
+
 	lista.Iterar(func(i int) bool {
-		contador += i
+		sumaIterInterno += i
 		return true
 	})
-	require.Equal(t, contador, TOTAL_SUMA)
+	require.Equal(t, solucionTotal, sumaIterInterno)
 	//La lista no debe ser modifica
 	require.Equal(t, len(sliceNumeros), lista.Largo())
 	require.Equal(t, sliceNumeros[lista.Largo()-1], lista.VerPrimero())
@@ -144,29 +146,35 @@ func TestIteradorInternoCompleto(t *testing.T) {
 func TestIteradorInternoCorte(t *testing.T) {
 	//TEST ENCONTRAR EL NUMERO IMPAR
 	// Buscamos el indice del numero impar
-	const INDICE_NUMERO_IMPAR = 4
+	var (
+		solucion       int
+		impar          int
+		arrBuscarInpar = []int{2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20}
+	)
 	listaCorte := TDALista.CrearListaEnlazada[int]()
 	for _, valor := range arrBuscarInpar {
 		listaCorte.InsertarUltimo(valor)
+		if valor%2 != 0 {
+			solucion = valor
+		}
 	}
-	contador := 0
 	//Buscamos el indice donde se encuentra el primer numero impar
 	listaCorte.Iterar(func(i int) bool {
 		if i%2 != 0 {
+			impar = i
 			return false
 		}
-		contador++
 		return true
 	})
 	//verificamos que el indice coincida con el contador
-	require.Equal(t, contador, INDICE_NUMERO_IMPAR)
+	require.Equal(t, solucion, impar)
 	// La lista no se debe modificar
 	require.Equal(t, arrBuscarInpar[listaCorte.Largo()-listaCorte.Largo()], listaCorte.VerPrimero())
 	require.Equal(t, arrBuscarInpar[listaCorte.Largo()-1], listaCorte.VerUltimo())
 	require.False(t, listaCorte.EstaVacia())
-
 }
 
+// -------------------TEST ITERADOR EXTERNO ----------------------------//
 // De aquí para abajo serán Test unicamente para el Iterador Externo
 func TestIteradorExternoListaVacia(t *testing.T) {
 	t.Log("Haremos un test de iteracion con una lista vacia")
@@ -306,4 +314,159 @@ func BorrarElementosExternamente(t *testing.B) {
 	require.Equal(t, "Lezama", iter.Borrar())
 	require.Equal(t, "Limachi", iter.Borrar())
 	require.True(t, lista.EstaVacia())
+}
+
+func TestIteradorExternoInsertar(t *testing.T) {
+	//Insertar usando el iterador externo en una lista vacia
+	var (
+		sliceNumeros = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+		largo        = len(sliceNumeros)
+	)
+	lista := TDALista.CrearListaEnlazada[int]()
+	iter := lista.Iterador()
+	for _, valor := range sliceNumeros {
+		iter.Insertar(valor)
+	}
+	//Esta operacion es identica a InsertarPrimero pq el iterador apunta al primer nodo
+	require.Equal(t, sliceNumeros[lista.Largo()-1], iter.VerActual())
+	//verificamos que la lista se modifique usando la primitiva Insertar del iterador
+	require.False(t, lista.EstaVacia())
+	require.Equal(t, largo, lista.Largo())
+
+}
+
+func TestIteradorExternoInsertarUltimo(t *testing.T) {
+	// Caso borde: si el iterador esta posicionado en el final de un elemento se tiene que comportar como la funcion
+	//InsertarUltimo
+	var (
+		arrNumImpares = []int{1, 3, 5, 7, 9, 11, 13}
+		contador      = 0
+		numeroImpar   = 15
+	)
+	lista := TDALista.CrearListaEnlazada[int]()
+	for _, valor := range arrNumImpares {
+		lista.InsertarUltimo(valor)
+	}
+	iter := lista.Iterador()
+	for iter.HaySiguiente() {
+		require.Equal(t, arrNumImpares[contador], iter.VerActual())
+		contador++
+		iter.Siguiente()
+	}
+	iter.Insertar(numeroImpar)
+	//en este caso pasamos de un arr [1,3,5,7,9,11,13] => [1,3,5,7,9,11,13,15]
+	require.Equal(t, numeroImpar, lista.VerUltimo())
+
+}
+
+func TestIteradorExternoInsertarPrimero(t *testing.T) {
+	//Caso borde: Cuando el iterador apunta al primer nodo, este al insertar un dato se tiene que comportar como la funcion
+	// InsertarPrimero
+	var (
+		arrEquipos = []string{"Francia", "Croacia"}
+		campeon    = "Argentina"
+	)
+	lista := TDALista.CrearListaEnlazada[string]()
+	for _, valor := range arrEquipos {
+		lista.InsertarPrimero(valor)
+	}
+	iter := lista.Iterador()
+	iter.Insertar(campeon)
+	require.Equal(t, campeon, iter.VerActual())
+	require.Equal(t, len(arrEquipos)+1, lista.Largo())
+
+}
+
+func TestIteradorExternoBorrarPrimero(t *testing.T) {
+	// Borramos todos los elementos usando el iterador externo
+	var (
+		arrNumeros = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+		contador   = 1
+	)
+	lista := TDALista.CrearListaEnlazada[int]()
+	iter := lista.Iterador()
+	for _, valor := range arrNumeros {
+		iter.Insertar(valor)
+	}
+
+	for iter.HaySiguiente() {
+		dato := iter.Borrar()
+		require.Equal(t, arrNumeros[len(arrNumeros)-contador], dato)
+		contador++
+		iter.Siguiente()
+	}
+	//La lista tiene que tener un comportamiento como recien creada
+	require.True(t, lista.EstaVacia())
+	require.False(t, iter.HaySiguiente())
+	require.Panics(t, func() {
+		iter.Borrar()
+		iter.Siguiente()
+		iter.VerActual()
+	})
+}
+
+func TestIteradorExternoBorrarUltimo(t *testing.T) {
+	var (
+		sliceDecimal = []float64{1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.9, 10.0}
+		contador     = 1
+	)
+	lista := TDALista.CrearListaEnlazada[float64]()
+	iter := lista.Iterador()
+	for _, valor := range sliceDecimal {
+		iter.Insertar(valor)
+	}
+	for iter.HaySiguiente() {
+		if contador == lista.Largo() {
+			iter.Borrar()
+		} else {
+			iter.Siguiente()
+			contador++
+		}
+	}
+
+}
+
+func TestIteradorExternoIterarCompleto(t *testing.T) {
+	//Test vamos a contar la cantidad de elementos que hay en el slice
+	var (
+		sliceVocales = []string{"a", "e", "i", "o", "u"}
+	)
+	lista := TDALista.CrearListaEnlazada[string]()
+	iter := lista.Iterador()
+	for _, dato := range sliceVocales {
+		iter.Insertar(dato)
+	}
+	caracteres := 0
+	for iter.HaySiguiente() {
+		caracteres++
+		iter.Siguiente()
+	}
+	require.Equal(t, lista.Largo(), caracteres)
+}
+
+func TestIteradorExternoCorte(t *testing.T) {
+	//Test: encontrar el elemento que es impar
+	var (
+		impar          int
+		solucion       int
+		arrBuscarInpar = []int{2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20}
+	)
+	lista := TDALista.CrearListaEnlazada[int]()
+
+	for _, valor := range arrBuscarInpar {
+		//buscamos el elemento impar usando el bucle
+		lista.InsertarPrimero(valor)
+		if valor%2 != 0 {
+			solucion = valor
+		}
+	}
+	//Ahora usamos nuestro iterador y buscamos
+	for iter := lista.Iterador(); iter.HaySiguiente(); iter.Siguiente() {
+		if iter.VerActual()%2 != 0 {
+			impar = iter.Borrar()
+		}
+	}
+	require.Equal(t, solucion, impar)
+	//Como borramos un elemento , se modifica el largo de la lista
+	require.Equal(t, len(arrBuscarInpar)-1, lista.Largo())
 }

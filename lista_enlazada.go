@@ -84,6 +84,7 @@ func (lista *listaEnlazada[T]) Largo() int {
 	return lista.largo
 }
 
+// --------------ITERADOR INTERNO ----------------------------//
 func (lista listaEnlazada[T]) Iterar(visitar func(T) bool) {
 	nodoAux := lista.primero
 	estado := true
@@ -96,6 +97,8 @@ func (lista listaEnlazada[T]) Iterar(visitar func(T) bool) {
 	}
 }
 
+//-----------------ITERADOR EXTERNO -----------------//
+
 func (lista *listaEnlazada[T]) Iterador() IteradorLista[T] {
 	return &iterListaEnlazada[T]{lista: lista, actual: lista.primero}
 }
@@ -104,7 +107,7 @@ func (iterador *iterListaEnlazada[T]) HaySiguiente() bool {
 	return iterador.actual != nil
 }
 
-func (iterador *iterListaEnlazada[T]) VerActual() T {
+func (iterador iterListaEnlazada[T]) VerActual() T {
 	if !iterador.HaySiguiente() {
 		panic(_PANIC_FIN_ITERACION)
 	}
@@ -129,8 +132,8 @@ func (iterador *iterListaEnlazada[T]) Insertar(elemento T) {
 		nuevoEnlace.siguiente = iterador.lista.primero
 		iterador.lista.primero = nuevoEnlace
 		iterador.actual = nuevoEnlace
-	} else if iterador.actual == iterador.lista.ultimo {
-		nuevoEnlace.siguiente = nil
+	} else if iterador.anterior == iterador.lista.ultimo {
+		//nuevoEnlace.siguiente = nil
 		iterador.lista.ultimo.siguiente = nuevoEnlace
 		iterador.actual = iterador.lista.ultimo
 		iterador.lista.ultimo = nuevoEnlace
@@ -139,6 +142,7 @@ func (iterador *iterListaEnlazada[T]) Insertar(elemento T) {
 		iterador.anterior.siguiente = nuevoEnlace
 		iterador.actual = nuevoEnlace
 	}
+	iterador.lista.largo++
 }
 
 func (iterador *iterListaEnlazada[T]) Borrar() T {
@@ -149,13 +153,15 @@ func (iterador *iterListaEnlazada[T]) Borrar() T {
 	if iterador.actual == iterador.lista.primero {
 		iterador.lista.primero = iterador.lista.primero.siguiente
 		iterador.actual = iterador.lista.primero
-		if iterador.lista.primero == nil {
-			iterador.lista.ultimo = nil
-		}
+		//if iterador.lista.primero == nil {
+		//	iterador.lista.ultimo = nil
+		//}
 	} else if iterador.actual == iterador.lista.ultimo {
-		iterador.lista.ultimo = iterador.anterior
-		iterador.actual.siguiente = nil
-		iterador.actual = nil
+		//iterador.lista.ultimo = iterador.anterior
+		iterador.lista.ultimo = iterador.lista.ultimo.siguiente
+		//iterador.actual.siguiente = nil
+		//iterador.actual = nil
+		//iterador.actual = iterador.lista.ultimo
 	} else {
 		iterador.actual = iterador.actual.siguiente
 		iterador.anterior.siguiente = iterador.actual
