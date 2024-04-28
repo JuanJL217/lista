@@ -17,7 +17,7 @@ func TestListaVacia(t *testing.T) {
 	require.PanicsWithValue(t, "La lista esta vacia", func() { lista.VerUltimo() }, "Si no hay un inicio, no hay un final")
 }
 
-func TestAgregarElementosParte1(t *testing.T) {
+func TestAgregarElementos(t *testing.T) {
 	t.Log("Prueba agregando 3 elementos, iniciando insertando al principio")
 	lista := TDALista.CrearListaEnlazada[int]()
 	lista.InsertarUltimo(5)
