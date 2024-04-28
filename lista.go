@@ -15,7 +15,7 @@ type Lista[T any] interface {
 	//entrara en panico con el siguiente mensaje "la lista esta vacia"
 	BorrarPrimero() T
 
-	//VerPrimero: Obtiene el primer elemento de la lista, Si la lista esta vacia, entrara en panico
+	//VerPrimero: Obtiene el primer elemento de la lista. Si la lista esta vacia, entrara en panico
 	//con el siguiente mensaje "la lista esta vacia"
 	VerPrimero() T
 
@@ -29,23 +29,27 @@ type Lista[T any] interface {
 	//Iterar: Iterador interno, itera hasta que la funcion visitar reciba un "false" o la lista quede vacia.
 	Iterar(visitar func(T) bool)
 
-	//Iteador: Iterador externo, devuelve un IteradorLista con la cual vamos a poder iterar esta Lista
+	//Iteador: Iterador externo, devuelve un IteradorLista y accedemos a sus primitivas
 	Iterador() IteradorLista[T]
 }
 
 type IteradorLista[T any] interface {
-	//VerActual: Obtiene el elemento de la posicion actual donde este el iterador.
+	//VerActual: Obtiene el elemento de la posicion actual donde este el iterador. Si el iterador esta en una posicion final , entrara en panico con el siguiente mensaje
+	// "Fin de iteracion"
 	VerActual() T
 
-	//HaySiguiente: Devuelve verdadero si hay algo existente en la siguiente posicion, false caso contrario.
+	//HaySiguiente: Devuelve verdadero si hay algo para ver, false caso contrario.
 	HaySiguiente() bool
 
-	//Siguiente: Avanza a la siguiente posicion de donde esté actualmente
+	//Siguiente: Avanza a la siguiente posicion de donde esté actualmente. Si el iterador esta en una posicion final, entrara en panico con el siguiente mensaje
+	// "Fin de iteracion"
 	Siguiente()
 
-	//Insertar: Agregará un nuevo elemento a la lista en dicha posicion del iterador
+	//Insertar: Agregará un nuevo elemento a la lista en dicha posicion del iterador. Si el iterador esta en la primera posicion de la lista tendra el mismo comportamiento
+	// que InsertarPrimero. Si esta al final , tendra el mismo comportamiento que InsertarUltimo
 	Insertar(T)
 
-	//Borrar: Quitará y devolverá el elemento que esté en esa posicion del iterador
+	//Borrar: Quitará y devolverá el elemento que esté en esa posicion del iterador. Si el iterador esta en la primera posicion de la lista, tendra el mismo comportamiento
+	// que BorrarPrimero. Si esta al final, tendra un comportamiento como BorrarUltimo
 	Borrar() T
 }

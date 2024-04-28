@@ -2,7 +2,7 @@ package lista
 
 const (
 	_PANIC_LISTA_VACIA   string = "La lista esta vacia"
-	_PANIC_FIN_ITERACION string = "El iterador termino de iterar"
+	_PANIC_FIN_ITERACION string = "Fin de iteracion"
 )
 
 type nodoLista[T any] struct {

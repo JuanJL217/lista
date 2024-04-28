@@ -17,7 +17,34 @@ func TestListaVacia(t *testing.T) {
 	require.PanicsWithValue(t, "La lista esta vacia", func() { lista.VerUltimo() }, "Si no hay un inicio, no hay un final")
 }
 
-func TestAgregarElementos(t *testing.T) {
+func TestListaInsertarPrimero(t *testing.T) {
+	var (
+		arrMarcasCelular = []string{"samsung", "apple", "xioami", "motorola", "huawei"}
+	)
+	lista := TDALista.CrearListaEnlazada[string]()
+	for _, valor := range arrMarcasCelular {
+		lista.InsertarPrimero(valor)
+	}
+	require.Equal(t, arrMarcasCelular[len(arrMarcasCelular)-1], lista.VerPrimero())
+	require.Equal(t, arrMarcasCelular[0], lista.VerUltimo())
+	require.Equal(t, len(arrMarcasCelular), lista.Largo())
+
+}
+
+func TestListaInsertarUltimo(t *testing.T) {
+	var (
+		arrNombres = []string{"Juan", "Ernesto", "Juarez", "Lezama"}
+	)
+	lista := TDALista.CrearListaEnlazada[string]()
+	for _, valor := range arrNombres {
+		lista.InsertarUltimo(valor)
+	}
+	require.Equal(t, arrNombres[lista.Largo()-1], lista.VerUltimo())
+	require.Equal(t, arrNombres[0], lista.VerPrimero())
+	require.Equal(t, len(arrNombres), lista.Largo())
+}
+func TestListaInsertarPrimerInsertarUltimo(t *testing.T) {
+	// Hacemos un test mezclando las dos primitivas
 	t.Log("Prueba agregando 3 elementos, iniciando insertando al principio")
 	lista := TDALista.CrearListaEnlazada[int]()
 	lista.InsertarUltimo(5)
@@ -38,7 +65,8 @@ func TestAgregarElementos(t *testing.T) {
 }
 
 func TestListaInsertarPrimeroBorrarPrimero(t *testing.T) {
-	//TEST BORRAR PRIMERO INSERTANDO PRIMERO
+	//Usamos la primitiva InsertarPrimero y BorrarPrimero
+	const LISTA_VACIA = 0
 	var (
 		sliceDecimal = []float64{1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.9, 10.0}
 	)
@@ -47,23 +75,25 @@ func TestListaInsertarPrimeroBorrarPrimero(t *testing.T) {
 		lista.InsertarPrimero(valor)
 	}
 	require.Equal(t, sliceDecimal[lista.Largo()-1], lista.VerPrimero())
-	for i := 0; i < len(sliceDecimal); i++ {
-		require.Equal(t, sliceDecimal[lista.Largo()-1], lista.VerPrimero())
-		lista.BorrarPrimero()
-
+	for i := 1; i <= len(sliceDecimal); i++ {
+		dato := lista.BorrarPrimero()
+		// Borramos nuestro primero que en este caso es el 10.0,obtenemeos ese dato y lo hacemos coincidir con el ultimo de la lista
+		require.Equal(t, sliceDecimal[len(sliceDecimal)-i], dato)
+		// y pasamos al nuevo primero que seria  9.9 , asi sucesivamente ...
 	}
-	//Verificamos que la lista quede vacia una vez borrado los primeros elementos
+	//Verificamos que la lista quede vacia una vez borrado los elementos
 	require.True(t, lista.EstaVacia())
 	require.Panics(t, func() {
 		lista.VerUltimo()
 		lista.VerPrimero()
 		lista.BorrarPrimero()
 	})
-	require.Equal(t, 0, lista.Largo())
+	// el largo de la lista tiene que quedar en un valor nulo
+	require.Equal(t, LISTA_VACIA, lista.Largo())
 }
 
 func TestListaInsertarUltimoBorrarPrimero(t *testing.T) {
-	//Test insertando ultimo borrando primero
+	//Otra manera de comprobar la primitiva BorrarPrimero usando InsertarUltimo
 	const LISTA_VACIA = 0
 	var (
 		sliceVocales = []string{"a", "e", "i", "o", "u"}
@@ -75,8 +105,9 @@ func TestListaInsertarUltimoBorrarPrimero(t *testing.T) {
 	require.Equal(t, sliceVocales[lista.Largo()-1], lista.VerUltimo())
 	//Vamos borrando los primeros datos , el ultimo no se modifica
 	for i := 0; i < len(sliceVocales); i++ {
-		require.Equal(t, sliceVocales[len(sliceVocales)-1], lista.VerUltimo())
-		lista.BorrarPrimero()
+		dato := lista.BorrarPrimero()
+		//El dato a borrar en el primer ciclo seria el primero en la lista => "a"
+		require.Equal(t, sliceVocales[i], dato, "tiene que coincidir el dato con el primer elemento de la lista y asi sucesivamente .... ")
 	}
 	//Verificamos que la lista quede vacia una vez borrado los primeros elementos
 	require.True(t, lista.EstaVacia())
@@ -88,9 +119,42 @@ func TestListaInsertarUltimoBorrarPrimero(t *testing.T) {
 	require.Equal(t, LISTA_VACIA, lista.Largo())
 }
 
+func TestListaVolumen(t *testing.T) {
+	const LISTA_VACIA = 0
+	var (
+		arrVolumen = make([]int, 1000)
+	)
+	lista := TDALista.CrearListaEnlazada[int]()
+
+	for indice := range arrVolumen {
+		lista.InsertarPrimero(indice + 1)
+		arrVolumen[indice] = indice + 1
+	}
+	// la primitiva Largo() tiene que coincidir con la long del arr
+	require.Equal(t, len(arrVolumen), lista.Largo())
+	// la posicion inicial de la lista tiene que coincidir con VerUltimo()
+	require.Equal(t, arrVolumen[0], lista.VerUltimo())
+	// la posicion final de la lista tiene que coincidir con VerPrimero()
+	require.Equal(t, arrVolumen[len(arrVolumen)-1], lista.VerPrimero())
+	// la lista no tiene que estar vacia
+	require.False(t, lista.EstaVacia())
+
+	//Borramos todos los elementos de la lista
+	for i := 0; i < len(arrVolumen); i++ {
+		lista.BorrarPrimero()
+	}
+	require.True(t, lista.EstaVacia())
+	require.Panics(t, func() {
+		lista.BorrarPrimero()
+		lista.VerPrimero()
+		lista.VerUltimo()
+	})
+	require.Equal(t, LISTA_VACIA, lista.Largo())
+}
+
 // --------------TEST ITERADOR INTERNO---------------------------//
 func TestIteradorInternoVacio(t *testing.T) {
-	//Test Iterador interno: Iterando una lista vacia
+	//Iterando una lista vacia
 	const LISTA_VACIA = 0
 	lista := TDALista.CrearListaEnlazada[int]()
 	lista.Iterar(func(i int) bool {
@@ -107,48 +171,47 @@ func TestIteradorInternoVacio(t *testing.T) {
 }
 
 func TestIteradorInternoCompleto(t *testing.T) {
-	//Test SUMA TODOS LOS ELEMENTOS
+	//Sumar todos los elementos de una lista
 	var (
-		solucionTotal   int
+		total           int
 		sliceNumeros    = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 		sumaIterInterno int
 	)
 	lista := TDALista.CrearListaEnlazada[int]()
 	for _, valor := range sliceNumeros {
 		lista.InsertarPrimero(valor)
-		solucionTotal += valor
+		total += valor
 	}
 
 	lista.Iterar(func(i int) bool {
 		sumaIterInterno += i
 		return true
 	})
-	require.Equal(t, solucionTotal, sumaIterInterno)
+	require.Equal(t, total, sumaIterInterno)
 	//La lista no debe ser modifica
 	require.Equal(t, len(sliceNumeros), lista.Largo())
 	require.Equal(t, sliceNumeros[lista.Largo()-1], lista.VerPrimero())
-	require.Equal(t, sliceNumeros[lista.Largo()-lista.Largo()], lista.VerUltimo())
+	require.Equal(t, sliceNumeros[0], lista.VerUltimo())
 	require.False(t, lista.EstaVacia())
 
 }
 
 func TestIteradorInternoCorte(t *testing.T) {
-	//TEST ENCONTRAR EL NUMERO IMPAR
 	// Buscamos el indice del numero impar
 	var (
 		solucion       int
 		impar          int
 		arrBuscarInpar = []int{2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20}
 	)
-	listaCorte := TDALista.CrearListaEnlazada[int]()
+	lista := TDALista.CrearListaEnlazada[int]()
 	for _, valor := range arrBuscarInpar {
-		listaCorte.InsertarUltimo(valor)
+		lista.InsertarUltimo(valor)
 		if valor%2 != 0 {
 			solucion = valor
 		}
 	}
-	//Buscamos el indice donde se encuentra el primer numero impar
-	listaCorte.Iterar(func(i int) bool {
+	//Usamos nuestro iterador
+	lista.Iterar(func(i int) bool {
 		if i%2 != 0 {
 			impar = i
 			return false
@@ -158,13 +221,9 @@ func TestIteradorInternoCorte(t *testing.T) {
 	//verificamos que el indice coincida con el contador
 	require.Equal(t, solucion, impar)
 	// La lista no se debe modificar
-	require.Equal(t, arrBuscarInpar[listaCorte.Largo()-listaCorte.Largo()], listaCorte.VerPrimero())
-	require.Equal(t, arrBuscarInpar[listaCorte.Largo()-1], listaCorte.VerUltimo())
-	require.False(t, listaCorte.EstaVacia())
-}
-
-func TestVolumen(t *testing.T) {
-
+	require.Equal(t, arrBuscarInpar[0], lista.VerPrimero())
+	require.Equal(t, arrBuscarInpar[lista.Largo()-1], lista.VerUltimo())
+	require.False(t, lista.EstaVacia())
 }
 
 // -------------------TEST ITERADOR EXTERNO ----------------------------//
