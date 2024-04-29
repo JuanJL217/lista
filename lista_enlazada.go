@@ -1,8 +1,8 @@
 package lista
 
 const (
-	_PANIC_LISTA_VACIA   string = "La lista esta vacia"
-	_PANIC_FIN_ITERACION string = "Fin de iteracion"
+	PANIC_LISTA_VACIA   string = "La lista esta vacia"
+	PANIC_FIN_ITERACION string = "El iterador termino de iterar"
 )
 
 type nodoLista[T any] struct {
@@ -58,7 +58,7 @@ func (lista *listaEnlazada[T]) InsertarUltimo(elemento T) {
 
 func (lista *listaEnlazada[T]) BorrarPrimero() T {
 	if lista.EstaVacia() {
-		panic(_PANIC_LISTA_VACIA)
+		panic(PANIC_LISTA_VACIA)
 	}
 	dato := lista.primero.dato
 	lista.primero = lista.primero.siguiente
@@ -68,14 +68,14 @@ func (lista *listaEnlazada[T]) BorrarPrimero() T {
 
 func (lista *listaEnlazada[T]) VerPrimero() T {
 	if lista.EstaVacia() {
-		panic(_PANIC_LISTA_VACIA)
+		panic(PANIC_LISTA_VACIA)
 	}
 	return lista.primero.dato
 }
 
 func (lista *listaEnlazada[T]) VerUltimo() T {
 	if lista.EstaVacia() {
-		panic(_PANIC_LISTA_VACIA)
+		panic(PANIC_LISTA_VACIA)
 	}
 	return lista.ultimo.dato
 }
@@ -109,14 +109,14 @@ func (iterador *iterListaEnlazada[T]) HaySiguiente() bool {
 
 func (iterador iterListaEnlazada[T]) VerActual() T {
 	if !iterador.HaySiguiente() {
-		panic(_PANIC_FIN_ITERACION)
+		panic(PANIC_FIN_ITERACION)
 	}
 	return iterador.actual.dato
 }
 
 func (iterador *iterListaEnlazada[T]) Siguiente() {
 	if !iterador.HaySiguiente() {
-		panic(_PANIC_FIN_ITERACION)
+		panic(PANIC_FIN_ITERACION)
 	}
 	iterador.anterior = iterador.actual
 	iterador.actual = iterador.actual.siguiente
@@ -144,7 +144,7 @@ func (iterador *iterListaEnlazada[T]) Insertar(elemento T) {
 
 func (iterador *iterListaEnlazada[T]) Borrar() T {
 	if !iterador.HaySiguiente() {
-		panic(_PANIC_FIN_ITERACION)
+		panic(PANIC_FIN_ITERACION)
 	}
 	elementoBorrardo := iterador.actual.dato
 	if iterador.actual == iterador.lista.primero {

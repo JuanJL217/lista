@@ -35,14 +35,14 @@ type Lista[T any] interface {
 
 type IteradorLista[T any] interface {
 	//VerActual: Obtiene el elemento de la posicion actual donde este el iterador. Si el iterador esta en una posicion final , entrara en panico con el siguiente mensaje
-	// "Fin de iteracion"
+	// "El iterador termino de iterar"
 	VerActual() T
 
 	//HaySiguiente: Devuelve verdadero si hay algo para ver, false caso contrario.
 	HaySiguiente() bool
 
 	//Siguiente: Avanza a la siguiente posicion de donde esté actualmente. Si el iterador esta en una posicion final, entrara en panico con el siguiente mensaje
-	// "Fin de iteracion"
+	// "El iterador termino de iterar"
 	Siguiente()
 
 	//Insertar: Agregará un nuevo elemento a la lista en dicha posicion del iterador. Si el iterador esta en la primera posicion de la lista tendra el mismo comportamiento

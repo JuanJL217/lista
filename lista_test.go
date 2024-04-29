@@ -12,9 +12,9 @@ func TestListaVacia(t *testing.T) {
 	lista := TDALista.CrearListaEnlazada[string]()
 	require.True(t, lista.EstaVacia(), "Devuelve True, por ser una lista vacia")
 	require.Equal(t, 0, lista.Largo(), "Al ser una lista vacia, tiene largo 0")
-	require.PanicsWithValue(t, "La lista esta vacia", func() { lista.BorrarPrimero() }, "Lista vacia, no hay elementos para borrar")
-	require.PanicsWithValue(t, "La lista esta vacia", func() { lista.VerPrimero() }, "Si no hay elemento, no hay nada en la primera posicion")
-	require.PanicsWithValue(t, "La lista esta vacia", func() { lista.VerUltimo() }, "Si no hay un inicio, no hay un final")
+	require.PanicsWithValue(t, TDALista.PANIC_LISTA_VACIA, func() { lista.BorrarPrimero() }, "Lista vacia, no hay elementos para borrar")
+	require.PanicsWithValue(t, TDALista.PANIC_LISTA_VACIA, func() { lista.VerPrimero() }, "Si no hay elemento, no hay nada en la primera posicion")
+	require.PanicsWithValue(t, TDALista.PANIC_LISTA_VACIA, func() { lista.VerUltimo() }, "Si no hay un inicio, no hay un final")
 }
 
 func TestListaInsertarPrimero(t *testing.T) {
@@ -232,9 +232,9 @@ func TestIteradorExternoListaVacia(t *testing.T) {
 	t.Log("Haremos un test de iteracion con una lista vacia")
 	lista := TDALista.CrearListaEnlazada[float64]()
 	iter := lista.Iterador()
-	require.PanicsWithValue(t, "El iterador termino de iterar", func() { iter.VerActual() }, "Entra en pánico, porque la lista esta vacia, así que entiende que ya terminó su iteracion")
-	require.PanicsWithValue(t, "El iterador termino de iterar", func() { iter.Siguiente() }, "Al no haber elemtnos para posicionarse, tira el panico")
-	require.PanicsWithValue(t, "El iterador termino de iterar", func() { iter.Borrar() }, "Si no hay elemento posicionado, no puedo borrar nada")
+	require.PanicsWithValue(t, TDALista.PANIC_FIN_ITERACION, func() { iter.VerActual() }, "Entra en pánico, porque la lista esta vacia, así que entiende que ya terminó su iteracion")
+	require.PanicsWithValue(t, TDALista.PANIC_FIN_ITERACION, func() { iter.Siguiente() }, "Al no haber elemtnos para posicionarse, tira el panico")
+	require.PanicsWithValue(t, TDALista.PANIC_FIN_ITERACION, func() { iter.Borrar() }, "Si no hay elemento posicionado, no puedo borrar nada")
 	require.False(t, iter.HaySiguiente(), "Al ser vacia, no hay siguiente")
 }
 
@@ -280,7 +280,7 @@ func TestAgregarVariosElementosExternosListaVacia(t *testing.T) {
 	iter.Siguiente()
 	require.Equal(t, 7.8, iter.VerActual())
 	iter.Siguiente()
-	require.PanicsWithValue(t, "El iterador termino de iterar", func() { iter.VerActual() })
+	require.PanicsWithValue(t, TDALista.PANIC_FIN_ITERACION, func() { iter.VerActual() })
 
 	require.Equal(t, 7, lista.Largo(), "Al haber agregado externamente, el Largo debe ser igual a la cantidad de elementos que tiene la lista")
 }
@@ -312,7 +312,7 @@ func TestInsertarElementosExternamente(t *testing.T) {
 	iter.Siguiente()
 	iter.Siguiente()
 	iter.Siguiente()
-	require.PanicsWithValue(t, "El iterador termino de iterar", func() { iter.VerActual() })
+	require.PanicsWithValue(t, TDALista.PANIC_FIN_ITERACION, func() { iter.VerActual() })
 	iter.Insertar(8)
 	require.Equal(t, 8, iter.VerActual())
 	require.Equal(t, 8, lista.VerUltimo())
@@ -331,7 +331,7 @@ func TestBorrarElementoExternamente1(t *testing.T) {
 	require.Equal(t, "Podré promocionar?", iter.VerActual())
 	require.Equal(t, "Podré promocionar?", iter.Borrar())
 	require.Equal(t, 0, lista.Largo())
-	require.PanicsWithValue(t, "El iterador termino de iterar", func() { iter.VerActual() }, "Al borrarse el unico elemento, no hay nada para iterar, entonces 'termino de iterar'")
+	require.PanicsWithValue(t, TDALista.PANIC_FIN_ITERACION, func() { iter.VerActual() }, "Al borrarse el unico elemento, no hay nada para iterar, entonces 'termino de iterar'")
 	require.PanicsWithValue(t, "La lista esta vacia", func() { lista.VerPrimero() })
 	require.PanicsWithValue(t, "La lista esta vacia", func() { lista.VerUltimo() })
 	require.PanicsWithValue(t, "La lista esta vacia", func() { lista.BorrarPrimero() })
@@ -363,7 +363,7 @@ func TestBorrarElementosExternamente(t *testing.T) {
 	require.Equal(t, "Avalos", iter.VerActual())
 	require.Equal(t, "Avalos", iter.Borrar())
 	require.Equal(t, "Miranda", lista.VerUltimo(), "Al borrar 'Avalos' de la lista, el elemento anterior es el nuevo ultimo elemento de la lista")
-	require.PanicsWithValue(t, "El iterador termino de iterar", func() { iter.VerActual() }, "Entra en panic porque actualmente está apuntando al nill de la lista (el final)")
+	require.PanicsWithValue(t, TDALista.PANIC_FIN_ITERACION, func() { iter.VerActual() }, "Entra en panic porque actualmente está apuntando al nill de la lista (el final)")
 
 	require.Equal(t, 4, lista.Largo(), "Por haber eliminado 3 elementos de una lista con 7 elementos")
 }
